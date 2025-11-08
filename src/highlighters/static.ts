@@ -48,6 +48,8 @@ export function buildStyles(plugin: DynamicHighlightsPlugin) {
   for (let query of queries) {
     let className = "." + query.class;
     if (!query.color) continue;
+    // Only apply styles for enabled queries; default to enabled when undefined
+    if (query.enabled === false) continue;
     styles[className] = { backgroundColor: query.color };
   }
   let theme = EditorView.theme(styles);
@@ -111,7 +113,7 @@ const staticHighlighter = ViewPlugin.fromClass(
         groupDecos: Range<Decoration>[] = [],
         widgetDecos: Range<Decoration>[] = [],
         lineClasses: { [key: number]: string[] } = {},
-        queries = Object.values(view.state.facet(staticHighlightConfig).queries);
+        queries = Object.values(view.state.facet(staticHighlightConfig).queries).filter(q => q.enabled !== false);
       for (let part of view.visibleRanges) {
         for (let query of queries) {
           let cursor: RegExpCursor | SearchCursor;

@@ -783,3 +783,40 @@
 }
 
 /* #endregion pickr vendored styles */
+
+/* #region dashboard */
+.dh-dashboard {
+  padding: 12px;
+}
+.dh-dashboard-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+.dh-dashboard-actions .dh-btn {
+  margin-left: 8px;
+}
+.dh-highlighter-list .dh-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-top: 1px solid var(--background-modifier-border);
+  padding: 8px 0;
+}
+.dh-row .dh-meta {
+  display: grid;
+  grid-template-columns: 16px auto 1fr;
+  grid-gap: 8px;
+  align-items: center;
+}
+.dh-color {
+  width: 14px;
+  height: 14px;
+  border-radius: 3px;
+  border: 1px solid var(--background-modifier-border);
+}
+.dh-controls .dh-btn {
+  margin-left: 8px;
+}
+/* #endregion dashboard */

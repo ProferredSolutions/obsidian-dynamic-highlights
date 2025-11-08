@@ -1,11 +1,12 @@
 import { Extension, StateEffect } from "@codemirror/state";
 import { EditorView } from "@codemirror/view";
-import { debounce, MarkdownView, Plugin } from "obsidian";
+import { debounce, MarkdownView, Plugin, WorkspaceLeaf } from "obsidian";
 import { highlightSelectionMatches, reconfigureSelectionHighlighter } from "./highlighters/selection";
 import { buildStyles, staticHighlighterExtension } from "./highlighters/static";
 import addIcons from "./icons/customIcons";
 import { DEFAULT_SETTINGS, DynamicHighlightsSettings, HighlighterOptions } from "./settings/settings";
 import { SettingTab } from "./settings/ui";
+import { DashboardView, DASHBOARD_VIEW_TYPE } from "./dashboard/view";
 
 interface CustomCSS {
   css: string;
@@ -26,6 +27,14 @@ export default class DynamicHighlightsPlugin extends Plugin {
     await this.loadSettings();
     this.settingsTab = new SettingTab(this.app, this);
     this.addSettingTab(this.settingsTab);
+    this.registerView(DASHBOARD_VIEW_TYPE, leaf => new DashboardView(leaf, this));
+    this.addCommand({
+      id: "open-dynamic-highlights-dashboard",
+      name: "Open Dynamic Highlights Dashboard",
+      callback: async () => {
+        await this.activateDashboardView();
+      },
+    });
     addIcons();
     this.staticHighlighter = staticHighlighterExtension(this);
     this.extensions = [];
@@ -34,6 +43,19 @@ export default class DynamicHighlightsPlugin extends Plugin {
     this.updateStyles();
     this.registerEditorExtension(this.extensions);
     this.initCSS();
+  }
+
+  async activateDashboardView() {
+    const { workspace } = this.app;
+    let leaf: WorkspaceLeaf | null = null;
+    const leaves = workspace.getLeavesOfType(DASHBOARD_VIEW_TYPE);
+    if (leaves.length > 0) {
+      leaf = leaves[0];
+    } else {
+      leaf = workspace.getRightLeaf(false);
+      await leaf?.setViewState({ type: DASHBOARD_VIEW_TYPE, active: true });
+    }
+    leaf && workspace.revealLeaf(leaf);
   }
 
   async loadSettings() {
